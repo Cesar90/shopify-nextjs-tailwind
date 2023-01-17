@@ -101,6 +101,15 @@ export interface ISingleProduct{
     collections: ICollection[]
 }
 
+type ISingleProductSomeProperty = Pick<ISingleProduct, "id" | "title" | "handle" | "description">
+
+export interface ISingleProductJson extends ISingleProductSomeProperty{
+    image?: string
+    variantPrice?: string
+    variantQuantity?: number
+    variantTitle?: string
+}
+
 export interface IAllProductNode{
     node:{
         handle:string

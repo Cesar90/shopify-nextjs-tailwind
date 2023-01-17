@@ -3,6 +3,7 @@ import { ISingleProduct } from "../utils/interface"
 import { useState, useContext } from "react"
 import { formatter } from '../utils/helpers'
 import  ProductOptions  from './ProductOptions'
+import { CartContext } from '../context/shopContext'
 
 interface IProps{
   product: ISingleProduct
@@ -11,7 +12,7 @@ interface IOptions{
   [x:string]:string
 }
 
-interface IAllVariantOption{
+export interface IAllVariantOption{
   id:string,
   title: string
   handle:string
@@ -19,12 +20,14 @@ interface IAllVariantOption{
   options: IOptions
   variantTitle: string
   variantPrice: number
-  variantQuanity: number
+  variantQuantity: number
+  href?: string
 }
 
 type IFirstVariant = IAllVariantOption | undefined
 
 export default function ProductForm({ product }: IProps){
+  const { addToCart } = useContext(CartContext)
   
   const allVariantOptions:IAllVariantOption[] | undefined = product.variants.edges?.map(variant => {
     const allOptions:IOptions = {}
@@ -39,7 +42,7 @@ export default function ProductForm({ product }: IProps){
       options: allOptions,
       variantTitle: variant.node.title,
       variantPrice: variant.node.priceV2.amount,
-      variantQuanity: 1
+      variantQuantity: 1
     }
   })
 
@@ -57,12 +60,22 @@ export default function ProductForm({ product }: IProps){
     setSelectedOptions(prevState => {
       return { ...prevState, [name]: value }
     })
+
+    const selection = {
+      ...selectedOption,
+      [name]:value
+    }
+    allVariantOptions?.map(item => {
+      if(JSON.stringify(item.options) === JSON.stringify(selection)){
+        setSelectedVariant(item)
+      }
+    })
   }
 
   return (
     <div className="rounded-2xl p-4 shadow-lg flex flex-col w-full md:w-1/3">
       <h2 className="text-2xl font-bold">{product.title}</h2>
-      <span className="pb-6">{formatter.format(priceAmount)}</span>
+      <span className="pb-3">{formatter.format(priceAmount)}</span>
       {
         product.options.map(option => (
           <ProductOptions 
@@ -74,7 +87,13 @@ export default function ProductForm({ product }: IProps){
           />
         ))
       }
-      <button className="bg-black rounded-lg text-white px-2 py-3 hover:bg-gray-800">
+      <button 
+        onClick={() => {
+          if(selectedVariant && addToCart){
+            addToCart(selectedVariant)
+          }
+        }}
+        className="bg-black rounded-lg text-white px-2 py-3 mt-3 hover:bg-gray-800">
         Add To Card
       </button>
     </div>

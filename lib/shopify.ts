@@ -1,6 +1,11 @@
 const domain = process.env.SHOPIFY_STORE_DOMAIN;
 const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESSTOKEN;
 
+interface ILineItems{
+  id: string
+  variantQuantity: number
+}
+
 async function ShopifyData(query: string) {
   const URL = `https://${domain}/api/2023-01/graphql.json`;
   console.log(URL)
@@ -171,63 +176,63 @@ export async function getProduct(handle:string) {
   return product;
 }
 
-// export async function createCheckout(id:string, quantity:string) {
-//   const query = `
-//     mutation {
-//       checkoutCreate(input: {
-//         lineItems: [{ variantId: "${id}", quantity: ${quantity}}]
-//       }) {
-//         checkout {
-//           id
-//           webUrl
-//         }
-//       }
-//     }`;
+export async function createCheckout(id:string, quantity:number) {
+  const query = `
+    mutation {
+      checkoutCreate(input: {
+        lineItems: [{ variantId: "${id}", quantity: ${quantity}}]
+      }) {
+        checkout {
+          id
+          webUrl
+        }
+      }
+    }`;
 
-//   const response = await ShopifyData(query);
+  const response = await ShopifyData(query);
 
-//   const checkout = response.data.checkoutCreate.checkout
-//     ? response.data.checkoutCreate.checkout
-//     : [];
+  const checkout = response.data.checkoutCreate.checkout
+    ? response.data.checkoutCreate.checkout
+    : [];
 
-//   return checkout;
-// }
+  return checkout;
+}
 
-// export async function updateCheckout(id, lineItems) {
-//   const lineItemsObject = lineItems.map((item) => {
-//     return `{
-//       variantId: "${item.id}",
-//       quantity:  ${item.variantQuantity}
-//     }`;
-//   });
+export async function updateCheckout(id: string, lineItems: ILineItems[]) {
+  const lineItemsObject = lineItems.map((item) => {
+    return `{
+      variantId: "${item.id}",
+      quantity:  ${item.variantQuantity}
+    }`;
+  });
 
-//   const query = `
-//   mutation {
-//     checkoutLineItemsReplace(lineItems: [${lineItemsObject}], checkoutId: "${id}") {
-//       checkout {
-//         id
-//         webUrl
-//         lineItems(first: 25) {
-//           edges {
-//             node {
-//               id
-//               title
-//               quantity
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }`;
+  const query = `
+  mutation {
+    checkoutLineItemsReplace(lineItems: [${lineItemsObject}], checkoutId: "${id}") {
+      checkout {
+        id
+        webUrl
+        lineItems(first: 25) {
+          edges {
+            node {
+              id
+              title
+              quantity
+            }
+          }
+        }
+      }
+    }
+  }`;
 
-//   const response = await ShopifyData(query);
+  const response = await ShopifyData(query);
 
-//   const checkout = response.data.checkoutLineItemsReplace.checkout
-//     ? response.data.checkoutLineItemsReplace.checkout
-//     : [];
+  const checkout = response.data.checkoutLineItemsReplace.checkout
+    ? response.data.checkoutLineItemsReplace.checkout
+    : [];
 
-//   return checkout;
-// }
+  return checkout;
+}
 
 // export async function recursiveCatalog(cursor = "", initialRequest = true) {
 //   let data;
