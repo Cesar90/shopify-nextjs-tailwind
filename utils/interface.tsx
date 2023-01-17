@@ -1,6 +1,7 @@
 export interface IProductNodeImagesNodeDeep{
     originalSrc:string
     altText:string
+    url: string
 }
 
 export interface IProductNodeImagesNode{
@@ -48,13 +49,13 @@ export interface IVariantNode{
         id: string
         availableForSale: boolean
         priceV2:{
-            amount:string
+            amount:number
         }
     }
 }
 
 export interface IVariant{
-    edges: IVariantNode
+    edges: IVariantNode[] | null
 }
 
 export interface ICollectionNodeProductEdgesNode{

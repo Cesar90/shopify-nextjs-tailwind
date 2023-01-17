@@ -8,8 +8,9 @@ interface IProps{
 }
 
 export default function ProductPage ({ product }: IProps) {
+
   return (
-    <div>
+    <div className="min-h-screen py-12 sm:pt-20">
       <ProductPageContent product={product}/>
     </div>
   )
@@ -34,7 +35,7 @@ export async function getStaticPaths(){
 
 export async function getStaticProps({ params }: { params: {product:string} }) {
   const product:ISingleProduct = await getProduct(params.product)
-  
+  console.log()
   return {
     props:{product} //will be passes to the page component as props
   }
